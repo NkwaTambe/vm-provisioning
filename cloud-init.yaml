@@ -1,0 +1,51 @@
+#cloud-config
+
+# Create a user with sudo privileges
+users:
+  - name: student
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    shell: /bin/bash
+
+# Install packages automatically on first boot
+packages:
+  - nginx                 # Web server
+  - git                   # Version control
+  - vim                   # Editor
+  - htop                  # System monitor
+  - curl                  # Command-line HTTP client
+  - wget                  # Download tool
+  - build-essential       # Compiler tools
+  - python3               # Python runtime
+  - python3-pip           # Python package manager
+  - unzip                 # Extract zip files
+  - net-tools             # Network tools (ifconfig, netstat)
+  - tree                  # Directory structure visualization
+
+# Run commands at first boot
+runcmd:
+  # Set up a welcome page for Nginx
+  - echo "<h1>Welcome to Multipass Nginx Lab!</h1>" > /home/student/index.html
+  - sudo mv /home/student/index.html /var/www/html/index.html
+
+  # Enable and start Nginx
+  - sudo systemctl enable nginx
+  - sudo systemctl start nginx
+
+  # Create some directories for practice
+  - mkdir -p /home/student/projects
+  - mkdir -p /home/student/scripts
+
+  # Clone a sample GitHub repo for testing
+  - git clone git@github.com:NkwaTambe/my-wiki.git /home/student/projects/git-source
+
+  # Update pip and install a Python package
+  - python3 -m pip install --upgrade pip
+  - python3 -m pip install requests
+
+  # Show system info in a welcome log
+  - echo "Multipass VM initialized successfully on $(date)" >> /home/student/welcome.log
+  - uname -a >> /home/student/welcome.log
+  - lsb_release -a >> /home/student/welcome.log
+
+  # Set proper permissions
+  - chown -R student:student /home/student
